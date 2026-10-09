@@ -34,7 +34,7 @@ Windows host
 ## Project structure
 
 ``` text
-2108-dashboard/
+Finance dashboard app Docker/
 ├── Vagrantfile
 └── app/
     └── 2135_mini_finance/
