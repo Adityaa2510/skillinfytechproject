@@ -1,0 +1,5 @@
+.git
+.vagrant
+*.zip
+Dockerfile
+README-DOCKER.md

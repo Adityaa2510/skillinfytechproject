@@ -1,0 +1,22 @@
+
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.hostname = "dashboard-vm"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "2108-dashboard-vm"
+    vb.memory = 2048
+    vb.cpus = 2
+  end
+
+  config.vm.network "forwarded_port",
+    guest: 8080,
+    host: 8080,
+    host_ip: "127.0.0.1",
+    auto_correct: true
+
+  config.vm.synced_folder "app/2135_mini_finance", "/home/vagrant/2135_mini_finance"
+end
