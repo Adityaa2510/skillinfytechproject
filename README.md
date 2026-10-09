@@ -222,29 +222,3 @@ sudo docker ps
 
 Stop or remove the conflicting container, or choose another host port.
 
-### Image tag does not exist
-
-Check local tags with `sudo docker images`. Ensure the tag in
-`docker tag` matches the tag used by `docker build`.
-
-## Future improvements
-
--   Add automated image builds and vulnerability scanning in GitHub
-    Actions.
--   Pin base images by digest for reproducible builds.
--   Publish versioned image tags and document the release process.
--   Deploy the public image to a hosting provider after confirming its
-    port requirements.
--   Add a screenshot and a short demo GIF to the repository README.
-
-## Safety and maintenance
-
--   Do not commit passwords, access tokens, or other secrets.
--   Keep Docker and base images updated.
--   Verify the published image and tag in Docker Hub before sharing it.
--   Do not claim a public deployment is live until it has been deployed
-    and verified.
-
-## License
-
-Add a license file if you intend to distribute this project publicly.
