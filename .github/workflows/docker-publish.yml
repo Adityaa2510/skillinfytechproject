@@ -1,4 +1,4 @@
-
+```yaml
 name: Finance Dashboard CI/CD
 
 on:
@@ -35,11 +35,36 @@ jobs:
           push: false
           tags: mini-finance-dashboard:ci-test
 
+  sonarqube:
+    name: SonarQube Code Analysis
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run SonarQube analysis
+        id: sonar
+        continue-on-error: true
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+
   publish:
     name: CD - Publish Docker Image
     runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: [build, sonarqube]
+    if: >-
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.sonarqube.result == 'success' ||
+       needs.sonarqube.result == 'failure' ||
+       needs.sonarqube.result == 'cancelled') &&
+      (github.event_name == 'push' ||
+       github.event_name == 'workflow_dispatch')
 
     steps:
       - name: Checkout source
@@ -68,7 +93,11 @@ jobs:
     name: Deploy to Vagrant Ubuntu VM
     runs-on: self-hosted
     needs: publish
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: >-
+      always() &&
+      needs.publish.result == 'success' &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
 
     steps:
       - name: Pull published image
@@ -101,3 +130,5 @@ jobs:
 
           docker logs finance-dashboard
           exit 1
+```
+
