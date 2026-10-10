@@ -13,7 +13,6 @@ permissions:
 
 env:
   IMAGE_NAME: adityaa2510/mini-finance-dashboard
-  APP_PATH: "Finance dashboard app Docker/app/2135_mini_finance"
 
 jobs:
   build:
@@ -46,7 +45,6 @@ jobs:
           fetch-depth: 0
 
       - name: Run SonarQube analysis
-        id: sonar
         continue-on-error: true
         uses: SonarSource/sonarqube-scan-action@v7
         env:
@@ -94,7 +92,6 @@ jobs:
     runs-on: self-hosted
     needs: publish
     if: >-
-      always() &&
       needs.publish.result == 'success' &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/main'
@@ -107,11 +104,13 @@ jobs:
         run: |
           echo "$DOCKERHUB_TOKEN" | docker login \
             --username "$DOCKERHUB_USERNAME" --password-stdin
+
           docker pull "$IMAGE_NAME:sha-${GITHUB_SHA}"
 
       - name: Replace running dashboard
         run: |
           docker rm -f finance-dashboard 2>/dev/null || true
+
           docker run -d \
             --name finance-dashboard \
             --restart unless-stopped \
@@ -125,10 +124,10 @@ jobs:
               echo "Dashboard is responding successfully."
               exit 0
             fi
+
             sleep 2
           done
 
           docker logs finance-dashboard
           exit 1
 ```
-
